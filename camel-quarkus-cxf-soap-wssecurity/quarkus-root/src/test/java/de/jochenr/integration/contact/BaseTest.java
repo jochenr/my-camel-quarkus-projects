@@ -63,28 +63,28 @@ public class BaseTest {
 
     }
 
-    static {
-        HTTPConduitConfigurer httpConduitConfigurer = new HTTPConduitConfigurer() {
-            public void configure(String name, String address, HTTPConduit c) {
+    // static {
+    //     HTTPConduitConfigurer httpConduitConfigurer = new HTTPConduitConfigurer() {
+    //         public void configure(String name, String address, HTTPConduit c) {
 
-                TrustManager[] trustManagers = createTrustManagers();
+    //             TrustManager[] trustManagers = createTrustManagers();
 
-                TLSClientParameters tlsCP = new TLSClientParameters();
-                tlsCP.setTrustManagers(trustManagers);
+    //             TLSClientParameters tlsCP = new TLSClientParameters();
+    //             tlsCP.setTrustManagers(trustManagers);
 
-                // other TLS/SSL configuration like setting up TrustManagers
-                // in case of "localhost" the certname does not match the hostname, so ignore it
-                tlsCP.setDisableCNCheck(isLocalhost(c));
-                tlsCP.setUseHttpsURLConnectionDefaultSslSocketFactory(false);
+    //             // other TLS/SSL configuration like setting up TrustManagers
+    //             // in case of "localhost" the certname does not match the hostname, so ignore it
+    //             tlsCP.setDisableCNCheck(isLocalhost(c));
+    //             tlsCP.setUseHttpsURLConnectionDefaultSslSocketFactory(false);
 
-                c.setTlsClientParameters(tlsCP);
+    //             c.setTlsClientParameters(tlsCP);
 
-            }
-        };
+    //         }
+    //     };
 
-        final Bus bus = BusFactory.getThreadDefaultBus();
-        bus.setExtension(httpConduitConfigurer, HTTPConduitConfigurer.class);
-    }
+    //     final Bus bus = BusFactory.getThreadDefaultBus();
+    //     bus.setExtension(httpConduitConfigurer, HTTPConduitConfigurer.class);
+    // }
 
 
     
