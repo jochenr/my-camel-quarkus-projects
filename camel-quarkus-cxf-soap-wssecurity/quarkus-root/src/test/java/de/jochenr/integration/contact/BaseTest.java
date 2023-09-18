@@ -82,10 +82,12 @@ public class BaseTest {
                 // in case of "localhost" the certname does not match the hostname, so ignore it
 
                 // if (isLocalhost(httpConduit)) {
-                tlsCP.setDisableCNCheck(true);
-                tlsCP.setHostnameVerifier(new NoopHostnameVerifier());
+                // tlsCP.setDisableCNCheck(true);
+                // tlsCP.setHostnameVerifier(new NoopHostnameVerifier());
                 // }
                 tlsCP.setUseHttpsURLConnectionDefaultSslSocketFactory(true);
+       
+                System.out.println("Address in configure() of static block:\t" + address);
 
                 c.setTlsClientParameters(tlsCP);
 
@@ -112,27 +114,27 @@ public class BaseTest {
                 ? config.getOptionalValue("quarkus.http.test-ssl-host", String.class)
                 : config.getOptionalValue("quarkus.http.ssl-host", String.class);
         final String host = optionalHost.orElse("localhost");
-        System.out.println("HOST:\t" + host);
+        System.out.println("Host to call for Test:\t" + host);
         return String.format("https://%s:%d", host, port);
     }
 
     protected <T> void initTLS(T wsPort) {
 
-        TrustManager[] trustManagers = createTrustManagers();
+        // TrustManager[] trustManagers = createTrustManagers();
 
         HTTPConduit httpConduit = (HTTPConduit) ClientProxy.getClient(wsPort).getConduit();
 
         TLSClientParameters tlsCP = new TLSClientParameters();
 
-        tlsCP.setTrustManagers(trustManagers);
+        // tlsCP.setTrustManagers(trustManagers);
 
         // other TLS/SSL configuration like setting up TrustManagers
         // in case of "localhost" the certname does not match the hostname, so ignore it
-        if (isLocalhost(httpConduit)) {
+        // if (isLocalhost(httpConduit)) {
             tlsCP.setDisableCNCheck(true);
             tlsCP.setHostnameVerifier(new NoopHostnameVerifier());
-            System.out.println("IT's RUNNING AGAINST LOCALHOST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        }
+            System.out.println("Test is running againt \"" + httpConduit.getAddress() + "\" !!");
+        // }
         tlsCP.setUseHttpsURLConnectionDefaultSslSocketFactory(true);
 
         httpConduit.setTlsClientParameters(tlsCP);

@@ -62,6 +62,10 @@ public class HealthCheckSyncTest extends BaseTest {
 
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, getServerUrl() + WS_BASE_PATH);
 
+		// // to ignore wrong hostname in TLS cert
+        // initTLS(port);
+
+
         Properties samlProps = new Properties();
         samlProps.put("org.apache.wss4j.crypto.provider", "org.apache.wss4j.common.crypto.Merlin");
         samlProps.put("org.apache.wss4j.crypto.merlin.keystore.type", "pkcs12");
