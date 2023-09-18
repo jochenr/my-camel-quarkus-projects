@@ -24,16 +24,21 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.Optional;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
+import org.apache.cxf.bus.CXFBusFactory;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transport.http.HTTPConduitConfigurer;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -46,61 +51,69 @@ public class BaseTest {
 
         TrustManager[] trustManagers = null;
 
-                try {
-                    KeyStore trustStore = KeyStore.getInstance("pkcs12");
-                    try (InputStream is = Thread.currentThread().getContextClassLoader()
-                            .getResourceAsStream("truststore-client.jks")) {
-                        trustStore.load(is, "password".toCharArray());
+        try {
+            KeyStore trustStore = KeyStore.getInstance("pkcs12");
+            try (InputStream is = Thread.currentThread().getContextClassLoader()
+                    .getResourceAsStream("truststore-client.jks")) {
+                trustStore.load(is, "password".toCharArray());
 
-                        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-                        tmf.init(trustStore);
-                        trustManagers = tmf.getTrustManagers();
-                    }
-                } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
-                    throw new RuntimeException(e);
-                }
-                return trustManagers;
+                TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                tmf.init(trustStore);
+                trustManagers = tmf.getTrustManagers();
+            }
+        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException
+                | IOException e) {
+            throw new RuntimeException(e);
+        }
+        return trustManagers;
 
     }
 
-    // static {
-    //     HTTPConduitConfigurer httpConduitConfigurer = new HTTPConduitConfigurer() {
-    //         public void configure(String name, String address, HTTPConduit c) {
+    static {
+        HTTPConduitConfigurer httpConduitConfigurer = new HTTPConduitConfigurer() {
+            public void configure(String name, String address, HTTPConduit c) {
 
-    //             TrustManager[] trustManagers = createTrustManagers();
+                TrustManager[] trustManagers = createTrustManagers();
 
-    //             TLSClientParameters tlsCP = new TLSClientParameters();
-    //             tlsCP.setTrustManagers(trustManagers);
+                TLSClientParameters tlsCP = new TLSClientParameters();
+                tlsCP.setTrustManagers(trustManagers);
 
-    //             // other TLS/SSL configuration like setting up TrustManagers
-    //             // in case of "localhost" the certname does not match the hostname, so ignore it
-    //             tlsCP.setDisableCNCheck(isLocalhost(c));
-    //             tlsCP.setUseHttpsURLConnectionDefaultSslSocketFactory(false);
+                // other TLS/SSL configuration like setting up TrustManagers
+                // in case of "localhost" the certname does not match the hostname, so ignore it
 
-    //             c.setTlsClientParameters(tlsCP);
+                // if (isLocalhost(httpConduit)) {
+                tlsCP.setDisableCNCheck(true);
+                tlsCP.setHostnameVerifier(new NoopHostnameVerifier());
+                // }
+                tlsCP.setUseHttpsURLConnectionDefaultSslSocketFactory(true);
 
-    //         }
-    //     };
+                c.setTlsClientParameters(tlsCP);
 
-    //     final Bus bus = BusFactory.getThreadDefaultBus();
-    //     bus.setExtension(httpConduitConfigurer, HTTPConduitConfigurer.class);
-    // }
+            }
+        };
 
-
-    
+        final Bus bus = BusFactory.getThreadDefaultBus();
+        bus.setExtension(httpConduitConfigurer, HTTPConduitConfigurer.class);
+    }
 
     // protected String getServerUrl() {
-    //     Config config = ConfigProvider.getConfig();
-    //     final int port = LaunchMode.current().equals(LaunchMode.TEST) ? config.getValue("quarkus.http.test-port", Integer.class)
-    //             : config.getValue("quarkus.http.port", Integer.class);
-    //     return String.format("http://localhost:%d", port);
+    // Config config = ConfigProvider.getConfig();
+    // final int port = LaunchMode.current().equals(LaunchMode.TEST) ?
+    // config.getValue("quarkus.http.test-port", Integer.class)
+    // : config.getValue("quarkus.http.port", Integer.class);
+    // return String.format("http://localhost:%d", port);
     // }
     protected String getServerUrl() {
         Config config = ConfigProvider.getConfig();
         final int port = LaunchMode.current().equals(LaunchMode.TEST)
                 ? config.getValue("quarkus.http.test-ssl-port", Integer.class)
                 : config.getValue("quarkus.http.ssl-port", Integer.class);
-        return String.format("https://localhost:%d", port);
+        final Optional<String> optionalHost = LaunchMode.current().equals(LaunchMode.TEST)
+                ? config.getOptionalValue("quarkus.http.test-ssl-host", String.class)
+                : config.getOptionalValue("quarkus.http.ssl-host", String.class);
+        final String host = optionalHost.orElse("localhost");
+        System.out.println("HOST:\t" + host);
+        return String.format("https://%s:%d", host, port);
     }
 
     protected <T> void initTLS(T wsPort) {
@@ -108,15 +121,19 @@ public class BaseTest {
         TrustManager[] trustManagers = createTrustManagers();
 
         HTTPConduit httpConduit = (HTTPConduit) ClientProxy.getClient(wsPort).getConduit();
+
         TLSClientParameters tlsCP = new TLSClientParameters();
 
         tlsCP.setTrustManagers(trustManagers);
 
         // other TLS/SSL configuration like setting up TrustManagers
         // in case of "localhost" the certname does not match the hostname, so ignore it
-        tlsCP.setDisableCNCheck(isLocalhost(httpConduit));
-        tlsCP.setHostnameVerifier(new NoopHostnameVerifier());
-        tlsCP.setUseHttpsURLConnectionDefaultSslSocketFactory(false);
+        if (isLocalhost(httpConduit)) {
+            tlsCP.setDisableCNCheck(true);
+            tlsCP.setHostnameVerifier(new NoopHostnameVerifier());
+            System.out.println("IT's RUNNING AGAINST LOCALHOST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        }
+        tlsCP.setUseHttpsURLConnectionDefaultSslSocketFactory(true);
 
         httpConduit.setTlsClientParameters(tlsCP);
     }
