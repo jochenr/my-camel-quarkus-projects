@@ -1,0 +1,13 @@
+camel_quarkus\jochenr\de\cxf_soap\contactservice\ContactWS.class
+de\jochenr\quarkus\integration\contact\route\AsyncRouteBuilder$2.class
+camel_quarkus\jochenr\de\cxf_soap\contactservice\Contacts.class
+de\jochenr\quarkus\framework\camel\cxfsoap\CxfConsumerEndpointBuilder$1.class
+camel_quarkus\jochenr\de\cxf_soap\contactservice\AddContact.class
+de\jochenr\quarkus\framework\camel\cxfsoap\CxfProducerEndpointBuilder$3.class
+de\jochenr\quarkus\integration\contact\route\AsyncRouteBuilder$1.class
+camel_quarkus\jochenr\de\cxf_soap\contactservice\Contact.class
+camel_quarkus\jochenr\de\cxf_soap\contactservice\ObjectFactory.class
+camel_quarkus\jochenr\de\cxf_soap\contactservice\ContactService.class
+camel_quarkus\jochenr\de\cxf_soap\contactservice\ContactType.class
+camel_quarkus\jochenr\de\cxf_soap\contactservice\package-info.class
+camel_quarkus\jochenr\de\cxf_soap\contactservice\Address.class

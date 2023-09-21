@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.jochenr.quarkus.integration</groupId>
-	<artifactId>camel-quarkus-cxf-soap-wssecurity-project</artifactId>
+	<artifactId>camel-quarkus-cxf-wssecurity-wsrm-project</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
 	<packaging>pom</packaging>

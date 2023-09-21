@@ -6,11 +6,11 @@
 
 	<parent>
 		<groupId>de.jochenr.quarkus.integration</groupId>
-		<artifactId>camel-quarkus-cxf-soap-wssecurity-project</artifactId>
+		<artifactId>camel-quarkus-cxf-wssecurity-wsrm-project</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>camel-quarkus-cxf-soap-wssecurity</artifactId>
+	<artifactId>camel-quarkus-cxf-soap-wssecurity-wsrm</artifactId>
 
 	<properties>
 		<maven.compiler.release>17</maven.compiler.release>
@@ -41,7 +41,11 @@
 		<dependency>
 			<groupId>org.apache.camel.quarkus</groupId>
 			<artifactId>camel-quarkus-rest</artifactId>
-		</dependency>
+		  </dependency>
+		  <dependency>
+			<groupId>org.apache.camel.quarkus</groupId>
+			<artifactId>camel-quarkus-jackson</artifactId>
+		  </dependency>
 		<dependency>
 			<groupId>org.apache.camel.quarkus</groupId>
 			<artifactId>camel-quarkus-bean</artifactId>
@@ -217,6 +221,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>keytool-maven-plugin</artifactId>
+				<version>1.7</version>
 				<configuration>
 					<keypass>password</keypass>
 					<validity>365</validity>
