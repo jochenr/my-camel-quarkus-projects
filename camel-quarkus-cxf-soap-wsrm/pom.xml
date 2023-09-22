@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>de.jochenr.quarkus.integration</groupId>
+	<artifactId>camel-quarkus-cxf-wsrm-project</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<packaging>pom</packaging>
+
+	<properties>
+		<compiler-plugin.version>3.11.0</compiler-plugin.version>
+		<maven.compiler.release>17</maven.compiler.release>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+		<!-- <quarkus.platform.group-id>com.redhat.quarkus.platform</quarkus.platform.group-id> -->
+		<quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+		<!-- <quarkus.platform.version>2.13.7.Final-redhat-00003</quarkus.platform.version> -->
+		<quarkus.platform.version>3.2.5.Final</quarkus.platform.version>
+		<!--<quarkus.platform.version>3.0.3.Final</quarkus.platform.version>-->
+		<skipITs>true</skipITs>
+		<surefire-plugin.version>3.1.2</surefire-plugin.version>
+
+		<quarkus-artemis.version>3.0.1</quarkus-artemis.version>
+
+		<assertj.version>3.24.2</assertj.version>
+
+		<java.version>17</java.version>
+		<maven.compiler.source>17</maven.compiler.source>
+  		<maven.compiler.target>17</maven.compiler.target>
+	</properties>
+
+
+	<modules>
+		<module>quarkus-root</module>
+	</modules>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>${quarkus.platform.group-id}</groupId>
+					<artifactId>quarkus-maven-plugin</artifactId>
+					<version>${quarkus.platform.version}</version>
+					<extensions>true</extensions>
+					<executions>
+						<execution>
+							<goals>
+								<goal>build</goal>
+								<goal>generate-code</goal>
+								<goal>generate-code-tests</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>${quarkus.platform.group-id}</groupId>
+				<artifactId>${quarkus.platform.artifact-id}</artifactId>
+				<version>${quarkus.platform.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>${quarkus.platform.group-id}</groupId>
+				<artifactId>quarkus-camel-bom</artifactId>
+				<version>${quarkus.platform.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.quarkiverse.artemis</groupId>
+				<artifactId>quarkus-artemis-bom</artifactId>
+				<version>${quarkus-artemis.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!--
+			<dependency>
+                <groupId>org.apache.camel.quarkus</groupId>
+                <artifactId>camel-quarkus-bom-test</artifactId>
+                <version>${camel-quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+			-->
+			<!--
+			<dependency>
+                <groupId>io.quarkiverse.cxf</groupId>
+                <artifactId>quarkus-cxf-bom-test</artifactId>
+                <version>${quarkiverse-cxf.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+			-->
+		</dependencies>
+	</dependencyManagement>
+</project>

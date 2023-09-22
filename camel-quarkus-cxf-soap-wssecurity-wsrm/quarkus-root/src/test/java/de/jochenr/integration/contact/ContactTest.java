@@ -77,6 +77,9 @@ public class ContactTest extends BaseTest {
 
 		logger.info("SOAP Call from ContactTest will call:\t" + getServerHttpUrl() + WS_BASE_PATH);
 
+		// for WS-RM
+		requestContext.put(Message.ROBUST_ONEWAY, Boolean.TRUE.toString());
+
 		// SAML sender Vouches properties
 		Properties samlProps = new Properties();
 		samlProps.put("org.apache.wss4j.crypto.provider", "org.apache.wss4j.common.crypto.Merlin");

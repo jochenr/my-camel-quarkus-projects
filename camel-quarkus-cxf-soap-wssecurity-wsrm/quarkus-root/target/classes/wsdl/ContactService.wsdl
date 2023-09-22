@@ -210,10 +210,20 @@
 	</wsdl:binding>
 	<wsdl:service name="ContactService">
 		<wsdl:port binding="tns:ContactServiceSoapBinding" name="ContactServicePort">
+			<!-- working -->
 			<!--
-			<soap:address location="http://localhost:8080/cxf/services/contact" />
+			<soap:address location="http://localhost:8180/cxfservices/contact" />
 			-->
+
+			<!-- also working -->
+			
+			<soap:address location="https://localhost:8543/cxfservices/contact" />
+			
+
+			<!-- NOT Working, because override from code does not work any more! -->
+			<!--
 			<soap:address location="https://nowhere.com:8080/mustgetoverridden" />
+			-->
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>
