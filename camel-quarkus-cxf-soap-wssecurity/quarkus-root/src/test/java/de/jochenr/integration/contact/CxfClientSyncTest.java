@@ -28,7 +28,6 @@ import org.apache.cxf.ws.security.SecurityConstants;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.jboss.logging.Logger;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import camel_quarkus.jochenr.de.cxf_soap.contactservice.ContactService;
@@ -47,8 +46,6 @@ import jakarta.xml.ws.Service;
 
 @QuarkusTest
 public class CxfClientSyncTest extends BaseTest {
-
-
 
 	public static final String SAML_ASSERTION_USER_NAME = "TestUser";
 
@@ -78,9 +75,12 @@ public class CxfClientSyncTest extends BaseTest {
         ContactWS port = service.getPort(ContactWS.class);
         BindingProvider bp = (BindingProvider) port;
 
+		
+
 		// this has to be done AFTER    BindingProvider.ENDPOINT_ADDRESS_PROPERTY   with new version.....
         // // to ignore wrong hostname in TLS cert
-        // initTLS(port);
+		// HTTPConduit httpConduit = (HTTPConduit) ClientProxy.getClient(port).getConduit();
+        // initTLS(httpConduit);
 
         Map<String, Object> requestContext = bp.getRequestContext();
 
@@ -118,12 +118,12 @@ public class CxfClientSyncTest extends BaseTest {
 
 		Dispatch<Source> dispatch = service.createDispatch(ContactService.ContactServicePort, Source.class, Service.Mode.PAYLOAD);
 
-		Client client = ((DispatchImpl) dispatch).getClient();
-		HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
-
 		Map<String, Object> requestContext = dispatch.getRequestContext();
 
 		requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, getServerUrl() + WS_BASE_PATH);
+
+		Client client = ((DispatchImpl) dispatch).getClient();
+		HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
 
 		initTLS(httpConduit);
 
