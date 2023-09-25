@@ -1,0 +1,10 @@
+<ns2:getContactResponse xmlns:ns2="http://de.jochenr.camel-quarkus/cxf-soap/ContactService">
+	<return>
+		<ns2:name>Jochen</ns2:name>
+		<ns2:address>
+			<ns2:city>Karlsruhe</ns2:city>
+			<ns2:street>main Street 42</ns2:street>
+		</ns2:address>
+		<ns2:type>PERSONAL</ns2:type>
+	</return>
+</ns2:getContactResponse>

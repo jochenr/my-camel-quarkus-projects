@@ -30,7 +30,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
-import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.eclipse.microprofile.config.Config;
@@ -111,11 +110,9 @@ public class BaseTest {
         return String.format("https://%s:%d", host, port);
     }
 
-    protected <T> void initTLS(T wsPort) {
+    protected <T> void initTLS(HTTPConduit httpConduit) {
 
         TrustManager[] trustManagers = createTrustManagers();
-
-        HTTPConduit httpConduit = (HTTPConduit) ClientProxy.getClient(wsPort).getConduit();
 
         TLSClientParameters tlsCP = new TLSClientParameters();
 
