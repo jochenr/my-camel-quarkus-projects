@@ -66,9 +66,6 @@ public class ContactTest extends BaseTest {
 		ContactWS port = service.getPort(ContactWS.class);
 		BindingProvider bp = (BindingProvider) port;
 
-		// to ignore wrong hostname in TLS cert
-		// initTLS(port);
-
 		Map<String, Object> requestContext = bp.getRequestContext();
 
 		// set target address

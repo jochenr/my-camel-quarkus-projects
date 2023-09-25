@@ -26,19 +26,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Optional;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.apache.cxf.Bus;
-import org.apache.cxf.BusFactory;
-import org.apache.cxf.bus.CXFBusFactory;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
-import org.apache.cxf.transport.http.HTTPConduitConfigurer;
-import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -69,34 +62,34 @@ public class BaseTest {
 
     }
 
-    static {
-        HTTPConduitConfigurer httpConduitConfigurer = new HTTPConduitConfigurer() {
-            public void configure(String name, String address, HTTPConduit c) {
+    // static {
+    //     HTTPConduitConfigurer httpConduitConfigurer = new HTTPConduitConfigurer() {
+    //         public void configure(String name, String address, HTTPConduit c) {
 
-                TrustManager[] trustManagers = createTrustManagers();
+    //             TrustManager[] trustManagers = createTrustManagers();
 
-                TLSClientParameters tlsCP = new TLSClientParameters();
-                tlsCP.setTrustManagers(trustManagers);
+    //             TLSClientParameters tlsCP = new TLSClientParameters();
+    //             tlsCP.setTrustManagers(trustManagers);
 
-                // other TLS/SSL configuration like setting up TrustManagers
-                // in case of "localhost" the certname does not match the hostname, so ignore it
+    //             // other TLS/SSL configuration like setting up TrustManagers
+    //             // in case of "localhost" the certname does not match the hostname, so ignore it
 
-                // if (isLocalhost(httpConduit)) {
-                // tlsCP.setDisableCNCheck(true);
-                // tlsCP.setHostnameVerifier(new NoopHostnameVerifier());
-                // }
-                tlsCP.setUseHttpsURLConnectionDefaultSslSocketFactory(true);
+    //             // if (isLocalhost(httpConduit)) {
+    //             // tlsCP.setDisableCNCheck(true);
+    //             // tlsCP.setHostnameVerifier(new NoopHostnameVerifier());
+    //             // }
+    //             tlsCP.setUseHttpsURLConnectionDefaultSslSocketFactory(false);
        
-                System.out.println("Address in configure() of static block:\t" + address);
+    //             System.out.println("Address in configure() of static block:\t" + address);
 
-                c.setTlsClientParameters(tlsCP);
+    //             c.setTlsClientParameters(tlsCP);
 
-            }
-        };
+    //         }
+    //     };
 
-        final Bus bus = BusFactory.getThreadDefaultBus();
-        bus.setExtension(httpConduitConfigurer, HTTPConduitConfigurer.class);
-    }
+    //     final Bus bus = BusFactory.getThreadDefaultBus();
+    //     bus.setExtension(httpConduitConfigurer, HTTPConduitConfigurer.class);
+    // }
 
     // protected String getServerUrl() {
     // Config config = ConfigProvider.getConfig();
@@ -120,22 +113,22 @@ public class BaseTest {
 
     protected <T> void initTLS(T wsPort) {
 
-        // TrustManager[] trustManagers = createTrustManagers();
+        TrustManager[] trustManagers = createTrustManagers();
 
         HTTPConduit httpConduit = (HTTPConduit) ClientProxy.getClient(wsPort).getConduit();
 
         TLSClientParameters tlsCP = new TLSClientParameters();
 
-        // tlsCP.setTrustManagers(trustManagers);
+        tlsCP.setTrustManagers(trustManagers);
 
         // other TLS/SSL configuration like setting up TrustManagers
         // in case of "localhost" the certname does not match the hostname, so ignore it
         // if (isLocalhost(httpConduit)) {
             tlsCP.setDisableCNCheck(true);
             tlsCP.setHostnameVerifier(new NoopHostnameVerifier());
-            System.out.println("Test is running againt \"" + httpConduit.getAddress() + "\" !!");
+            System.out.println("Test is running against \"" + httpConduit.getAddress() + "\" !!");
         // }
-        tlsCP.setUseHttpsURLConnectionDefaultSslSocketFactory(true);
+        // tlsCP.setUseHttpsURLConnectionDefaultSslSocketFactory(false);
 
         httpConduit.setTlsClientParameters(tlsCP);
     }

@@ -376,7 +376,42 @@
 	</wsdl:binding>
 	<wsdl:service name="ContactService">
 		<wsdl:port binding="tns:ContactServiceSoapBinding" name="ContactServicePort">
-			<soap:address location="http://localhost:8080/cxf/services/contact" />
+			<!-- working -->
+			<!--
+			<soap:address location="https://localhost:8543/cxfservices/contact" />
+			<soap:address location="https://localhost:8543/hasToBeOverridden" />
+
+			<soap:address location="https://dummy:8543/cxfservices/contact" />
+			<soap:address location="https://dummy:8543/mustgetoverridden" />
+
+			<soap:address location="https://dummy:1234/cxfservices/contact" />
+			<soap:address location="https://dummy:1234/mustgetoverridden" />
+
+			not setting the <<soap:address...>
+ 			element at all also works
+			-->
+
+
+			<!-- NOT Working, because override from code does not work any more! -->
+			<!--
+			<soap:address location="http://localhost:8180/cxfservices/contact" />
+			-->
+			
+
+			<!--
+				overriding only works, if 
+
+					HTTPConduit httpConduit = (HTTPConduit) ClientProxy.getClient(wsPort).getConduit();
+					TLSClientParameters tlsCP = new TLSClientParameters();
+					tlsCP.setDisableCNCheck(true);
+					tlsCP.setHostnameVerifier(new NoopHostnameVerifier());
+					httpConduit.setTlsClientParameters(tlsCP);
+
+				is done AFTER setting "requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "https://.....");"
+			-->
+			<soap:address location="to_be_overridden_in_code" />
+			
+
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>

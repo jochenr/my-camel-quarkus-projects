@@ -38,8 +38,8 @@ public class HealthCheckSyncTest extends BaseTest {
 	private static final String WS_BASE_PATH = "/cxfservices/contact";
 	ContactWS contactService = null;
 
-	@TestHTTPResource
-	URL url;
+	// @TestHTTPResource
+	// URL url;
 
 	public HealthCheckSyncTest() {
 
@@ -55,15 +55,16 @@ public class HealthCheckSyncTest extends BaseTest {
         ContactWS port = service.getPort(ContactWS.class);
         BindingProvider bp = (BindingProvider) port;
 
-        // to ignore wrong hostname in TLS cert
-        initTLS(port);
+		// this has to be done AFTER    BindingProvider.ENDPOINT_ADDRESS_PROPERTY   with new version.....
+        // // to ignore wrong hostname in TLS cert
+        // initTLS(port);
 
         Map<String, Object> requestContext = bp.getRequestContext();
 
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, getServerUrl() + WS_BASE_PATH);
 
-		// // to ignore wrong hostname in TLS cert
-        // initTLS(port);
+		// to ignore wrong hostname in TLS cert
+        initTLS(port);
 
 
         Properties samlProps = new Properties();
