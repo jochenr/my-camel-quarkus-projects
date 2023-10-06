@@ -1,0 +1,3 @@
+<ns2:getContact xmlns:ns2="http://de.jochenr.camel-quarkus/cxf-soap/ContactService">
+	<arg0>id4711</arg0>
+</ns2:getContact>
