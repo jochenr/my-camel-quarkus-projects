@@ -2,6 +2,7 @@ package de.jochenr.quarkus.framework.camel.cxfsoap;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.Properties;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.component.cxf.common.DataFormat;
@@ -25,9 +27,9 @@ import org.apache.camel.support.jsse.KeyManagersParameters;
 import org.apache.camel.support.jsse.KeyStoreParameters;
 import org.apache.camel.support.jsse.SSLContextClientParameters;
 import org.apache.camel.support.jsse.SSLContextParameters;
+import org.apache.camel.support.jsse.TrustManagersParameters;
 import org.apache.cxf.Bus;
 import org.apache.cxf.annotations.SchemaValidation.SchemaValidationType;
-import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.feature.Feature;
@@ -39,7 +41,6 @@ import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transport.https.httpclient.DefaultHostnameVerifier;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.cxf.transports.http.configuration.ProxyServerType;
-import org.apache.cxf.ws.addressing.AttributedURIType;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
 import org.apache.cxf.ws.rm.feature.RMFeature;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
@@ -195,6 +196,29 @@ public class CxfProducerEndpointBuilder {
 			}
 
 		});
+
+		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+            }
+
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            }
+
+        } };
+
+		 /* SSL specific settings start*/
+		SSLContextParameters sslContextParameters = new SSLContextParameters();
+		TrustManagersParameters trustManagersParameters = new TrustManagersParameters();
+		trustManagersParameters.setTrustManager(trustAllCerts[0]);
+		sslContextParameters.setTrustManagers(trustManagersParameters);
+		/* SSL specific settings end*/
+
+		this.cxfEndpoint.setSslContextParameters(sslContextParameters);
+		this.cxfEndpoint.setHostnameVerifier(new NoopHostnameVerifier());
 
 		Map<String, Object> propertiesTmp = this.cxfEndpoint.getProperties();
 		if (propertiesTmp == null) {
