@@ -1,5 +1,8 @@
 package de.jochenr.quarkus.integration.contact.route;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -11,6 +14,7 @@ import org.apache.camel.model.rest.RestBindingMode;
 
 import camel_quarkus.jochenr.de.cxf_soap.contactservice.AddContact;
 import camel_quarkus.jochenr.de.cxf_soap.contactservice.Contact;
+import de.jochenr.quarkus.framework.camel.cxfsoap.client.SamlStandaloneCallbackHandler;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.security.runtime.SecurityIdentityAssociation;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -98,7 +102,26 @@ public class AsyncRouteBuilder extends RouteBuilder {
 
 			.marshal(getDataFormatAdContact())
 
+
+			.process(new Processor() {
+
+				@Override
+				public void process(Exchange exchange) throws Exception {
+
+					Map<String, Object> requestContext = (Map)exchange.getProperty("RequestContext");
+					if (requestContext == null) {
+						requestContext = new HashMap();
+					}
+
+					((Map)requestContext).put("security.saml-callback-handler", new SamlStandaloneCallbackHandler("TestUser"));
+					exchange.setProperty("RequestContext", requestContext);
+				}
+				
+			})
+
 			.to(this.asyncCxfProducer)
+
+			.removeHeaders("*")
 		;
 
 

@@ -16,7 +16,6 @@ import org.apache.cxf.ws.security.SecurityConstants;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.jboss.logging.Logger;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import camel_quarkus.jochenr.de.cxf_soap.contactservice.Address;
@@ -35,6 +34,7 @@ import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.Service;
 import jakarta.xml.ws.soap.AddressingFeature;
 import jakarta.xml.ws.soap.MTOMFeature;
+import jakarta.xml.ws.soap.SOAPBinding;
 
 @QuarkusTest
 public class ContactTest extends BaseTest {
@@ -64,6 +64,11 @@ public class ContactTest extends BaseTest {
 				new AddressingFeature(true, true),
 				new WSRMConfigRMFeature());
 
+		// set target address
+		// FIX
+		// use this instead of "requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,......"
+		service.addPort(ContactService.ContactServicePort, SOAPBinding.SOAP11HTTP_BINDING, getServerHttpUrl() + WS_BASE_PATH);
+
 		ContactWS port = service.getPort(ContactWS.class);
 		BindingProvider bp = (BindingProvider) port;
 
@@ -73,7 +78,7 @@ public class ContactTest extends BaseTest {
 		Map<String, Object> requestContext = bp.getRequestContext();
 
 		// set target address
-		requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, getServerHttpUrl() + WS_BASE_PATH);
+		// requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, getServerHttpUrl() + WS_BASE_PATH);
 
 		logger.info("SOAP Call from ContactTest will call:\t" + getServerHttpUrl() + WS_BASE_PATH);
 
@@ -132,7 +137,6 @@ public class ContactTest extends BaseTest {
 	}
 
 	@Test
-	@Disabled
 	public void testAddContactRest() {
 
 		Contact contact = createContactObject();

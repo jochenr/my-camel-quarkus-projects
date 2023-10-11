@@ -220,9 +220,9 @@
 			<soap:address location="https://localhost:8543/cxfservices/contact" />
 			-->
 
-			<!-- NOT Working, because override from code does not work any more! -->
+			<!-- now also Working, because override from code does not work any more! -->
 			
-			<soap:address location="http://nowhere.com:8080/mustgetoverridden" />
+			<soap:address location="https://nowhere.com:8080/mustgetoverridden" />
 			
 		</wsdl:port>
 	</wsdl:service>
