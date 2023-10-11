@@ -5,14 +5,12 @@ import static io.restassured.RestAssured.given;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.cxf.ext.logging.LoggingInInterceptor;
 import org.apache.cxf.ext.logging.LoggingOutInterceptor;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.interceptor.Interceptor;
 import org.apache.cxf.message.Message;
-import org.apache.cxf.ws.security.SecurityConstants;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.jboss.logging.Logger;
@@ -24,7 +22,6 @@ import camel_quarkus.jochenr.de.cxf_soap.contactservice.Contact;
 import camel_quarkus.jochenr.de.cxf_soap.contactservice.ContactService;
 import camel_quarkus.jochenr.de.cxf_soap.contactservice.ContactType;
 import camel_quarkus.jochenr.de.cxf_soap.contactservice.ContactWS;
-import de.jochenr.quarkus.framework.camel.cxfsoap.client.SamlStandaloneCallbackHandler;
 import de.jochenr.quarkus.framework.camel.cxfsoap.feature.WSRMConfigRMFeature;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
@@ -34,6 +31,7 @@ import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.Service;
 import jakarta.xml.ws.soap.AddressingFeature;
 import jakarta.xml.ws.soap.MTOMFeature;
+import jakarta.xml.ws.soap.SOAPBinding;
 
 @QuarkusTest
 public class ContactTest extends BaseTest {
@@ -62,14 +60,20 @@ public class ContactTest extends BaseTest {
 		final Service service = Service.create(serviceUrl, ContactService.SERVICE, new MTOMFeature(true),
 				new AddressingFeature(true, true),
 				new WSRMConfigRMFeature());
+		
+		// set target address
+		// FIX
+		// use this instead of "requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,......"
+		service.addPort(ContactService.ContactServicePort, SOAPBinding.SOAP11HTTP_BINDING, getServerHttpUrl() + WS_BASE_PATH);
 
 		ContactWS port = service.getPort(ContactWS.class);
 		BindingProvider bp = (BindingProvider) port;
 
+
 		Map<String, Object> requestContext = bp.getRequestContext();
 
 		// set target address
-		requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, getServerHttpUrl() + WS_BASE_PATH);
+		// requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, getServerHttpUrl() + WS_BASE_PATH);
 
 		logger.info("SOAP Call from ContactTest will call:\t" + getServerHttpUrl() + WS_BASE_PATH);
 
@@ -110,7 +114,6 @@ public class ContactTest extends BaseTest {
 	}
 
 	@Test
-	@Disabled
 	public void testAddContactRest() {
 
 		Contact contact = createContactObject();
