@@ -24,21 +24,15 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Optional;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
-import org.apache.cxf.Bus;
-import org.apache.cxf.BusFactory;
-import org.apache.cxf.bus.CXFBusFactory;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
-import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
-import org.apache.cxf.transport.http.HTTPConduitConfigurer;
-import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -46,6 +40,28 @@ import org.eclipse.microprofile.config.ConfigProvider;
 import io.quarkus.runtime.LaunchMode;
 
 public class BaseTest {
+
+    static TrustManager[] createTrustManagers() {
+
+        TrustManager[] trustManagers = null;
+
+        try {
+            KeyStore trustStore = KeyStore.getInstance("pkcs12");
+            try (InputStream is = Thread.currentThread().getContextClassLoader()
+                    .getResourceAsStream("truststore-client.jks")) {
+                trustStore.load(is, "password".toCharArray());
+
+                TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                tmf.init(trustStore);
+                trustManagers = tmf.getTrustManagers();
+            }
+        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException
+                | IOException e) {
+            throw new RuntimeException(e);
+        }
+        return trustManagers;
+
+    }
 
 
     protected String getServerHttpUrl() {
@@ -70,6 +86,57 @@ public class BaseTest {
         final String host = optionalHost.orElse("localhost");
         System.out.println("Host to call for Test:\t" + host);
         return String.format("https://%s:%d", host, port);
+    }
+
+
+    protected <T> void initTLS(HTTPConduit httpConduit) {
+
+        // TrustManager[] trustManagers = createTrustManagers();
+
+        TrustManager[] trustManagers = new TrustManager[] { new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
+
+            } };
+
+
+        TLSClientParameters tlsCP = new TLSClientParameters();
+
+        tlsCP.setTrustManagers(trustManagers);
+
+        // other TLS/SSL configuration like setting up TrustManagers
+        // in case of "localhost" the certname does not match the hostname, so ignore it
+        if (isLocalhost(httpConduit)) {
+            tlsCP.setDisableCNCheck(true);
+            tlsCP.setHostnameVerifier(new NoopHostnameVerifier());
+        }
+        httpConduit.setTlsClientParameters(tlsCP);
+    }
+
+    protected static boolean isLocalhost(HTTPConduit httpConduit) {
+        boolean result = false;
+        try {
+            String address = httpConduit.getAddress();
+            URL url = new URL(address);
+            String host = url.getHost();
+            if (isLocalhost(host)) {
+                result = true;
+            }
+        } catch (MalformedURLException e) {
+            // egal, dann bleibt's halt "false"
+        }
+        return result;
+    }
+
+    protected static boolean isLocalhost(String hostname) {
+        return "localhost".equalsIgnoreCase(hostname) || "127.0.0.1".equals(hostname);
     }
 
 }
