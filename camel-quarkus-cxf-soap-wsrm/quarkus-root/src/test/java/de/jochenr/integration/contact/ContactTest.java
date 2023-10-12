@@ -11,10 +11,11 @@ import org.apache.cxf.ext.logging.LoggingOutInterceptor;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.interceptor.Interceptor;
 import org.apache.cxf.message.Message;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.jboss.logging.Logger;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import camel_quarkus.jochenr.de.cxf_soap.contactservice.Address;
@@ -61,10 +62,11 @@ public class ContactTest extends BaseTest {
 				new AddressingFeature(true, true),
 				new WSRMConfigRMFeature());
 		
+		String runtimeURL = getServerHttpUrl() + WS_BASE_PATH;
 		// set target address
 		// FIX
 		// use this instead of "requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,......"
-		service.addPort(ContactService.ContactServicePort, SOAPBinding.SOAP11HTTP_BINDING, getServerHttpUrl() + WS_BASE_PATH);
+		service.addPort(ContactService.ContactServicePort, SOAPBinding.SOAP11HTTP_BINDING, runtimeURL);
 
 		ContactWS port = service.getPort(ContactWS.class);
 		BindingProvider bp = (BindingProvider) port;
@@ -73,9 +75,23 @@ public class ContactTest extends BaseTest {
 		Map<String, Object> requestContext = bp.getRequestContext();
 
 		// set target address
-		// requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, getServerHttpUrl() + WS_BASE_PATH);
+		// requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, runtimeURL);
 
-		logger.info("SOAP Call from ContactTest will call:\t" + getServerHttpUrl() + WS_BASE_PATH);
+		
+		HTTPConduit httpConduit = (HTTPConduit) ClientProxy.getClient(port).getConduit();
+		HTTPClientPolicy httpClientPolicy = httpConduit.getClient();
+		if (httpClientPolicy == null) {
+			httpClientPolicy = new HTTPClientPolicy();
+		}
+		httpClientPolicy.setConnectionTimeout(120000);
+		httpClientPolicy.setReceiveTimeout(300000);
+		httpConduit.setClient(httpClientPolicy);
+		// to ignore wrong hostname in TLS cert
+		// this.initTLS(httpConduit);
+
+
+		logger.info("SOAP Call from ContactTest will call:\t" + runtimeURL);
+
 
 		// for WS-RM
 		requestContext.put(Message.ROBUST_ONEWAY, Boolean.TRUE.toString());		
@@ -124,8 +140,7 @@ public class ContactTest extends BaseTest {
 				.contentType(ContentType.JSON)
 				.body(contact)
 				.when()
-				// .post(this.getServerHttpUrl() + REST_BASE_PATH)
-				.post("http://localhost:8180" + REST_BASE_PATH)
+				.post(this.getServerHttpUrl() + REST_BASE_PATH)
 				.then()
 				.statusCode(200);
 	}
