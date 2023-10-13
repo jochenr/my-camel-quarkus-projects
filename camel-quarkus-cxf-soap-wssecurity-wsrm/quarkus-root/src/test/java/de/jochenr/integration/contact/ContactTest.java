@@ -65,7 +65,7 @@ public class ContactTest extends BaseTest {
 				new AddressingFeature(true, true),
 				new WSRMConfigRMFeature());
 
-		String runtimeURL = getServerHttpUrl() + WS_BASE_PATH;
+		String runtimeURL = getServerHttpsUrl() + WS_BASE_PATH;
 		// set target address
 		// FIX
 		// use this instead of "requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,......"
@@ -77,12 +77,12 @@ public class ContactTest extends BaseTest {
 		Map<String, Object> requestContext = bp.getRequestContext();
 
 		// set target address
-		// requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, runtimeURL);
+		requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, runtimeURL);
 
 		// to ignore wrong hostname in TLS cert
 		HTTPConduit httpConduit = (HTTPConduit) ClientProxy.getClient(port).getConduit();
 		// httpConduit....
-		// this.initTLS(httpConduit);
+		this.initTLS(httpConduit);
 
 		logger.info("SOAP Call from ContactTest will call:\t" + runtimeURL);
 
@@ -130,7 +130,7 @@ public class ContactTest extends BaseTest {
 		config.getXmlConfig().namespaceAware(false);
 		given()
 				.config(config)
-				.when().get(this.getServerHttpUrl() + WS_BASE_PATH + "?wsdl")
+				.when().get(this.getServerHttpsUrl() + WS_BASE_PATH + "?wsdl")
 				.then()
 				.statusCode(200)
 				.body(
@@ -154,7 +154,7 @@ public class ContactTest extends BaseTest {
 				.contentType(ContentType.JSON)
 				.body(contact)
 				.when()
-				.post(this.getServerHttpUrl() + REST_BASE_PATH)
+				.post(this.getServerHttpsUrl() + REST_BASE_PATH)
 				.then()
 				.statusCode(200);
 	}

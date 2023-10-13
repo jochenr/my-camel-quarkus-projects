@@ -64,16 +64,16 @@ public class BaseTest {
     }
 
 
-    protected String getServerHttpUrl() {
-        Config config = ConfigProvider.getConfig();
-        final int port = LaunchMode.current().equals(LaunchMode.TEST)
-                ? config.getValue("quarkus.http.test-port", Integer.class)
-                : config.getValue("quarkus.http.port", Integer.class);
-        final Optional<String> optionalHost = config.getOptionalValue("quarkus.http.test-host", String.class);
-        final String host = optionalHost.orElse("localhost");
-        System.out.println("Host to call for Test:\t" + host);
-        return String.format("http://%s:%d", host, port);
-    }
+    // protected String getServerHttpUrl() {
+    //     Config config = ConfigProvider.getConfig();
+    //     final int port = LaunchMode.current().equals(LaunchMode.TEST)
+    //             ? config.getValue("quarkus.http.test-port", Integer.class)
+    //             : config.getValue("quarkus.http.port", Integer.class);
+    //     final Optional<String> optionalHost = config.getOptionalValue("quarkus.http.test-host", String.class);
+    //     final String host = optionalHost.orElse("localhost");
+    //     System.out.println("Host to call for Test:\t" + host);
+    //     return String.format("http://%s:%d", host, port);
+    // }
 
     protected String getServerHttpsUrl() {
         Config config = ConfigProvider.getConfig();
