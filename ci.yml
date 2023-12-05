@@ -1,0 +1,20 @@
+prepare:
+  steps:
+    - name: Install Java JDK
+      command: nix-env -iA nixpkgs.jdk17
+    - name: Export JAVA_HOME env variable
+      command: export JAVA_HOME="$(readlink -e $(type -p javac) | sed -e
+        's/\/bin\/javac//g')"
+    - name: Install Maven
+      command: nix-env -iA nixpkgs.maven
+    - name: Build Java Application  (in dem Speialfall erst Verzeichnis wechseln)
+      command: cd camel-quarkus-cxf-soap-wssecurity && mvn clean install -DskipITs
+        -DskipTests -Dskip.surefire.tests=true
+test:
+  steps:
+    - name: Run Tests
+      command: cd camel-quarkus-cxf-soap-wssecurity && mvn verify -DskipITs=false
+        -DskipTests=false -Dskip.surefire.tests=false
+run:
+  steps:
+    - command: cd camel-quarkus-cxf-soap-wssecurity && mvn compile quarkus:dev
