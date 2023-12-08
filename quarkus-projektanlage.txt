@@ -1,0 +1,10 @@
+
+mvn io.quarkus.platform:quarkus-maven-plugin:3.6.1:create -DplatformVersion=[3.2.9,3.3.0.CR1) -DprojectGroupId=de.jochenr.poc.integration.rest -DprojectArtifactId=camel-quarkus-rest-example -Dextensions="quarkus-resteasy-jackson,camel-quarkus-rest,camel-quarkus-openapi-java,camel-quarkus-rest-openapi,camel-quarkus-json-validator,camel-quarkus-bean,camel-quarkus-log,camel-quarkus-mock,camel-quarkus-direct,camel-quarkus-jaxb,camel-quarkus-jta,camel-quarkus-jms,quarkus-narayana-jta,io.quarkiverse.messaginghub:quarkus-pooled-jms,io.quarkiverse.artemis:quarkus-artemis-jms"
+
+
+
+mvn quarkus:add-extension -Dextensions="oidc, openshift"
+
+
+mvn quarkus:add-extension -Dextensions="camel-quarkus-cxf-soap,camel-quarkus-attachments,io.quarkiverse.cxf:quarkus-cxf-rt-ws-security,
+

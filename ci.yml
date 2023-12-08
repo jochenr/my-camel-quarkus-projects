@@ -17,4 +17,9 @@ test:
         -DskipTests=false -Dskip.surefire.tests=false
 run:
   steps:
+<<<<<<< HEAD
     - command: cd camel-quarkus-cxf-soap-wssecurity && mvn compile quarkus:dev
+=======
+    - command: cd camel-quarkus-cxf-soap-wssecurity && cd quarkus-root && java -jar
+        target/quarkus-app/quarkus-run.jar
+>>>>>>> b29da5c0d071a95ae664112d5645a03e8761530d
