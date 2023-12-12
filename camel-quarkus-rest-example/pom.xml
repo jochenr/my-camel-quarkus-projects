@@ -146,7 +146,7 @@
       <plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>6.6.0</version>
+				<version>7.1.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -154,7 +154,8 @@
 						</goals>
 						<configuration>
 							<inputSpec>${project.basedir}/src/main/resources/petstore.yaml</inputSpec>
-							<modelPackage>de.jochenr.petstore.api</modelPackage>
+              <apiPackage>de.jochenr.petstore.api</apiPackage>
+							<modelPackage>de.jochenr.petstore.model</modelPackage>
 							<!--generatorName>java</generatorName>-->
               <generatorName>jaxrs-spec</generatorName>
 							<generateApiDocumentation>false</generateApiDocumentation>
@@ -165,17 +166,21 @@
 							<generateSupportingFiles>false</generateSupportingFiles>
 
 							<configOptions>
-								<!--<library>resteasy</library>-->
+								<library>quarkus</library>
+                <useMicroProfileOpenAPIAnnotations>false</useMicroProfileOpenAPIAnnotations>
+                <useSwaggerAnnotations>false</useSwaggerAnnotations>
+                <useBeanValidation>true</useBeanValidation>
 								<useJakartaEe>true</useJakartaEe>
 								<sourceFolder>src/gen/java/main</sourceFolder>
                 <interfaceOnly>true</interfaceOnly>
 								<dateLibrary>java8-localdatetime</dateLibrary>
 								<serializationLibrary>jackson</serializationLibrary>
 								<booleanGetterPrefix>is</booleanGetterPrefix>
+                <openApiNullable>false</openApiNullable>
+                
 								<!--
 								<withInterfaces>true</withInterfaces>
 								<interfaceOnly>true</interfaceOnly>
-								<apiPackage>de.jochenr.petstore.client.api</apiPackage>
 								<modelPackage>de.jochenr.petstore.client.model</modelPackage>
 								<invokerPackage>de.jochenr.petstore.client</invokerPackage>
 								-->
