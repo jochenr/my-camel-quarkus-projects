@@ -142,6 +142,66 @@
           </compilerArgs>
         </configuration>
       </plugin>
+
+      <plugin>
+				<groupId>org.openapitools</groupId>
+				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<version>7.1.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/petstore.yaml</inputSpec>
+              <apiPackage>de.jochenr.petstore.api</apiPackage>
+							<modelPackage>de.jochenr.petstore.model</modelPackage>
+							<!--generatorName>java</generatorName>-->
+              <generatorName>jaxrs-spec</generatorName>
+							<generateApiDocumentation>false</generateApiDocumentation>
+							<generateApis>true</generateApis>
+							<generateApiTests>false</generateApiTests>
+							<generateModelDocumentation>false</generateModelDocumentation>
+							<generateModelTests>false</generateModelTests>
+							<generateSupportingFiles>false</generateSupportingFiles>
+
+							<configOptions>
+								<library>quarkus</library>
+                <useMicroProfileOpenAPIAnnotations>false</useMicroProfileOpenAPIAnnotations>
+                <useSwaggerAnnotations>false</useSwaggerAnnotations>
+                <useBeanValidation>true</useBeanValidation>
+								<useJakartaEe>true</useJakartaEe>
+								<sourceFolder>src/gen/java/main</sourceFolder>
+                <interfaceOnly>true</interfaceOnly>
+								<dateLibrary>java8-localdatetime</dateLibrary>
+								<serializationLibrary>jackson</serializationLibrary>
+								<booleanGetterPrefix>is</booleanGetterPrefix>
+                <openApiNullable>false</openApiNullable>
+                
+								<!--
+								<withInterfaces>true</withInterfaces>
+								<interfaceOnly>true</interfaceOnly>
+								<modelPackage>de.jochenr.petstore.client.model</modelPackage>
+								<invokerPackage>de.jochenr.petstore.client</invokerPackage>
+								-->
+							</configOptions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+      <plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<configuration>
+							<source>src/gen/java/main</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefire-plugin.version}</version>
