@@ -8,3 +8,15 @@ mvn quarkus:add-extension -Dextensions="oidc, openshift"
 
 mvn quarkus:add-extension -Dextensions="camel-quarkus-cxf-soap,camel-quarkus-attachments,io.quarkiverse.cxf:quarkus-cxf-rt-ws-security,
 
+
+
+
+###################################################################################################
+### Camel-Quarkus-JMS  
+### Reproducer für
+### https://access.redhat.com/support/cases/#/case/04008631
+###################################################################################################
+
+
+mvn com.redhat.quarkus.platform:quarkus-maven-plugin:3.15.2.redhat-00003:create -DprojectGroupId=de.jochenr.poc.integration.jms -DprojectArtifactId=camel-quarkus-jms-example -Dextensions="camel-quarkus-bean,camel-quarkus-log,camel-quarkus-mock,camel-quarkus-direct,camel-quarkus-jaxb,camel-quarkus-jta,camel-quarkus-jms,quarkus-narayana-jta,io.quarkiverse.messaginghub:quarkus-pooled-jms,io.quarkiverse.artemis:quarkus-artemis-jms"
+
