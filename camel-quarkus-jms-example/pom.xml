@@ -19,12 +19,15 @@
         <surefire-plugin.version>3.3.1</surefire-plugin.version>
 
 
-        <!-- <quarkus-test-artemis.version>3.4.2</quarkus-test-artemis.version> -->
-		<quarkus-test-artemis.version>3.5.1</quarkus-test-artemis.version>
-
-		<!-- <quarkus-artemis.version>3.4.2.redhat-00002</quarkus-artemis.version> -->
+        <quarkus-artemis.version>3.4.2.redhat-00002</quarkus-artemis.version>
 		<!-- <quarkus-artemis.version>3.4.2</quarkus-artemis.version> -->
-		<quarkus-artemis.version>3.5.1</quarkus-artemis.version>
+		<!-- <quarkus-artemis.version>3.5.1</quarkus-artemis.version> -->
+
+
+        <quarkus-test-artemis.version>3.4.2</quarkus-test-artemis.version>
+		<!-- <quarkus-test-artemis.version>3.5.1</quarkus-test-artemis.version> -->
+
+		
     </properties>
 
     <dependencyManagement>
